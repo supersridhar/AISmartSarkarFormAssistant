@@ -1,0 +1,129 @@
+/* src/pages/Preview/PreviewPage.css */
+.preview-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+}
+
+.preview-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.preview-card {
+  width: 100%;
+}
+
+.success-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+  margin: 0 auto 20px;
+}
+
+.success-header h1 {
+  margin: 0 0 8px;
+  color: #1a1a2e;
+  font-size: 32px;
+}
+
+.success-header h2 {
+  margin: 0;
+  color: #667eea;
+  font-size: 20px;
+}
+
+.preview-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .preview-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-preview-section h3,
+.answers-summary h3 {
+  margin: 0 0 16px;
+  color: #1a1a2e;
+  font-size: 18px;
+}
+
+.image-preview-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-image {
+  width: 100%;
+  display: block;
+}
+
+.annotation-overlay {
+  position: absolute;
+  background: rgba(102, 126, 234, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.answers-list {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.answer-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.answer-item:last-child {
+  border-bottom: none;
+}
+
+.answer-label {
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.answer-value {
+  color: #667eea;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.preview-actions .ui-button {
+  flex: 1;
+  max-width: 250px;
+}

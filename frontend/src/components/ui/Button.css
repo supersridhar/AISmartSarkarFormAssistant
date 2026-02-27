@@ -1,0 +1,82 @@
+/* src/components/ui/Button.css */
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.ui-button.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.ui-button.primary:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.ui-button.secondary {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.ui-button.secondary:hover:not(.disabled) {
+  background: #667eea;
+  color: white;
+}
+
+.ui-button.success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
+
+.ui-button.success:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+}
+
+.ui-button.danger {
+  background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+  color: white;
+}
+
+.ui-button.danger:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(235, 51, 73, 0.4);
+}
+
+.ui-button.small {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.ui-button.medium {
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+.ui-button.large {
+  padding: 16px 32px;
+  font-size: 18px;
+}
+
+.ui-button.disabled,
+.ui-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.button-icon {
+  display: flex;
+  align-items: center;
+  font-size: 1.2em;
+}

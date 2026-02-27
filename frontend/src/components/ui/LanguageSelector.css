@@ -1,0 +1,66 @@
+/* src/components/ui/LanguageSelector.css */
+.language-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.language-selector.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.language-option:hover:not(:disabled) {
+  border-color: #667eea;
+  transform: translateX(4px);
+}
+
+.language-option.selected {
+  border-color: #667eea;
+  background: #f5f3ff;
+}
+
+.language-option:disabled {
+  cursor: not-allowed;
+}
+
+.lang-flag {
+  font-size: 32px;
+}
+
+.lang-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.lang-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.lang-native {
+  font-size: 14px;
+  color: #666;
+}
+
+.check-icon {
+  font-size: 20px;
+  color: #667eea;
+  font-weight: bold;
+}

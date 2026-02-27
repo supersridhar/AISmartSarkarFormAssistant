@@ -1,0 +1,50 @@
+/* src/components/ui/Card.css */
+.ui-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.ui-card.small {
+  padding: 12px;
+}
+
+.ui-card.medium {
+  padding: 24px;
+}
+
+.ui-card.large {
+  padding: 32px;
+}
+
+.ui-card.hoverable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ui-card.hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+  margin-bottom: 16px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.card-subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.card-content {
+  color: #333;
+}

@@ -1,0 +1,100 @@
+/* src/pages/Language/LanguageSelectionPage.css */
+.language-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.language-container {
+  width: 100%;
+  max-width: 500px;
+}
+
+.language-card {
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #667eea;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+  font-weight: 600;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+}
+
+.step.completed {
+  background: #667eea;
+  color: white;
+}
+
+.step.active {
+  background: #764ba2;
+  color: white;
+}
+
+.step-line {
+  width: 20px;
+  height: 2px;
+  background: #e0e0e0;
+}
+
+.language-content {
+  text-align: center;
+}
+
+.language-content h1 {
+  margin: 0 0 8px;
+  color: #1a1a2e;
+  font-size: 28px;
+}
+
+.language-content h2 {
+  margin: 0 0 16px;
+  color: #667eea;
+  font-size: 20px;
+}
+
+.language-description {
+  color: #666;
+  margin: 0 0 32px;
+  font-size: 14px;
+}
+
+.language-actions {
+  margin-top: 32px;
+}
