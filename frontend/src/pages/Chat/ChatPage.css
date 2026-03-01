@@ -125,3 +125,50 @@
   padding: 20px;
   text-align: center;
 }
+
+.voice-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  background: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.voice-btn:hover:not(:disabled) {
+  border-color: #667eea;
+  background: #f5f5ff;
+}
+
+.voice-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.voice-btn.listen-btn.listening {
+  background: #ff4757;
+  border-color: #ff4757;
+  animation: pulse 1s infinite;
+}
+
+.voice-btn.speak-btn.speaking {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

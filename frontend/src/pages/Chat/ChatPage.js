@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Card, ChatBubble, Loading } from '../../components/ui';
 import { useApp } from '../../context/AppContext';
+import { speakText, startSpeechRecognition, SPEECH_LANGUAGES, stopSpeaking } from '../../utils/voice';
 import './ChatPage.css';
 
 const API_BASE = "http://127.0.0.1:8000";
@@ -25,7 +26,16 @@ function ChatPage() {
   const [inputValue, setInputValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const chatEndRef = useRef(null);
+
+  // Get speech language code
+  const getSpeechLanguage = () => {
+    const langMap = { 'English': 'en', 'Hindi': 'hi', 'Marathi': 'mr' };
+    const langCode = langMap[state.selectedLanguage] || 'en';
+    return SPEECH_LANGUAGES[langCode] || 'en-US';
+  };
 
   // Generate questions on mount
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,13 +85,53 @@ function ChatPage() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory]);
 
+  // Speak the current question when it changes
+  useEffect(() => {
+    if (chatHistory.length > 1 && state.questions[currentQuestionIndex]) {
+      const currentQuestion = state.questions[currentQuestionIndex];
+      // Auto-speak the question (optional - can be disabled)
+      // speakQuestion(currentQuestion.question_text);
+    }
+  }, [currentQuestionIndex]);
+
+  const speakQuestion = async (text) => {
+    try {
+      setIsSpeaking(true);
+      await speakText(text, getSpeechLanguage());
+    } catch (err) {
+      console.log('Speech not available:', err);
+    } finally {
+      setIsSpeaking(false);
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    try {
+      setIsListening(true);
+      const transcript = await startSpeechRecognition(getSpeechLanguage());
+      setInputValue(transcript);
+    } catch (err) {
+      console.error('Voice input error:', err);
+      setError('Voice input failed. Please type your answer.');
+    } finally {
+      setIsListening(false);
+    }
+  };
+
+  const handleSpeakQuestion = () => {
+    const currentQuestion = state.questions[currentQuestionIndex];
+    if (currentQuestion) {
+      speakQuestion(currentQuestion.question_text);
+    }
+  };
+
   const getWelcomeMessage = (language) => {
     if (language === 'Hindi') {
-      return 'नमस्ते! मैं आपकी फॉर्म भरने में मदद करूंगा। कृपया नीचे दिए गए सवालों का जवाब दें।';
+      return 'नमस्ते! मैं आपकी फॉर्म भरने में मदद करूंगा। आप वॉइस से जवाब दे सकते हैं या टाइप कर सकते हैं।';
     } else if (language === 'Marathi') {
-      return 'नमस्कार! मी तुमची फॉर्म भरण्यास मदत करेन. कृपया खाली दिलेल्या प्रश्नांची उत्तरे द्या.';
+      return 'नमस्कार! मी तुमची फॉर्म भरण्यास मदत करेन. तुम्ही वॉइसने उत्तर देऊ शकता किंवा टाइप करू शकता.';
     }
-    return 'Hello! I will help you fill out this form. Please answer the questions below.';
+    return 'Hello! I will help you fill out this form. You can answer using voice or type.';
   };
 
   const handleSendAnswer = () => {
@@ -117,6 +167,8 @@ function ChatPage() {
             fieldName: state.questions[nextIndex].field_name
           }
         ]);
+        // Speak the next question automatically
+        speakQuestion(state.questions[nextIndex].question_text);
       }, 500);
     } else {
       handleSubmitAllAnswers();
@@ -150,6 +202,7 @@ function ChatPage() {
   };
 
   const handleStartOver = () => {
+    stopSpeaking();
     reset();
     navigate('/');
   };
@@ -211,14 +264,30 @@ function ChatPage() {
                 </span>
               </div>
               <div className="input-row">
+                <button 
+                  className={`voice-btn listen-btn ${isListening ? 'listening' : ''}`}
+                  onClick={handleVoiceInput}
+                  disabled={isListening}
+                  title="Click to speak your answer"
+                >
+                  {isListening ? '🎤...' : '🎤'}
+                </button>
                 <input
                   type="text"
                   className="chat-input"
-                  placeholder={`Type your answer in ${state.selectedLanguage} or English...`}
+                  placeholder={`Type or speak your answer in ${state.selectedLanguage}...`}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                 />
+                <button 
+                  className={`voice-btn speak-btn ${isSpeaking ? 'speaking' : ''}`}
+                  onClick={handleSpeakQuestion}
+                  disabled={isSpeaking}
+                  title="Click to hear the question"
+                >
+                  🔊
+                </button>
                 <Button 
                   variant="primary"
                   onClick={handleSendAnswer}
