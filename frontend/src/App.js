@@ -6,6 +6,7 @@ import {
   HomePage, 
   LanguageSelectionPage, 
   UploadPage, 
+  ExplainPage,
   ChatPage, 
   PreviewPage 
 } from './pages';
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/language" element={<LanguageSelectionPage />} />
             <Route path="/upload" element={<UploadPage />} />
+            <Route path="/explain" element={<ExplainPage />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/preview" element={<PreviewPage />} />
           </Routes>

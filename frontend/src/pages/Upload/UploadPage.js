@@ -41,12 +41,13 @@ function UploadPage() {
 
       const response = await axios.post(`${API_BASE}/upload_form`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        params: { language: state.selectedLanguage }
       });
 
       setFormId(response.data.form_id);
       setFields(response.data.fields);
-      setStep('chat');
-      navigate('/chat');
+      setStep('explain');
+      navigate('/explain');
     } catch (err) {
       console.error('Upload error:', err);
       setError(err.response?.data?.detail || 'Failed to upload form. Please try again.');

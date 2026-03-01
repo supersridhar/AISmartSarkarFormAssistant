@@ -14,6 +14,9 @@ const initialState = {
   // Extracted fields from OCR
   fields: [],
   
+  // Form explanation from LLM
+  formExplanation: null,
+  
   // Questions for chat
   questions: [],
   
@@ -42,6 +45,7 @@ const ActionTypes = {
   SET_FORM_ID: 'SET_FORM_ID',
   SET_LANGUAGE: 'SET_LANGUAGE',
   SET_FIELDS: 'SET_FIELDS',
+  SET_FORM_EXPLANATION: 'SET_FORM_EXPLANATION',
   SET_QUESTIONS: 'SET_QUESTIONS',
   SET_ANSWERS: 'SET_ANSWERS',
   SET_ANNOTATED_FIELDS: 'SET_ANNOTATED_FIELDS',
@@ -63,6 +67,8 @@ function appReducer(state, action) {
       return { ...state, selectedLanguage: action.payload };
     case ActionTypes.SET_FIELDS:
       return { ...state, fields: action.payload };
+    case ActionTypes.SET_FORM_EXPLANATION:
+      return { ...state, formExplanation: action.payload };
     case ActionTypes.SET_QUESTIONS:
       return { ...state, questions: action.payload };
     case ActionTypes.SET_ANSWERS:
@@ -100,6 +106,7 @@ export function AppProvider({ children }) {
     setFormId: (formId) => dispatch({ type: ActionTypes.SET_FORM_ID, payload: formId }),
     setLanguage: (language) => dispatch({ type: ActionTypes.SET_LANGUAGE, payload: language }),
     setFields: (fields) => dispatch({ type: ActionTypes.SET_FIELDS, payload: fields }),
+    setFormExplanation: (explanation) => dispatch({ type: ActionTypes.SET_FORM_EXPLANATION, payload: explanation }),
     setQuestions: (questions) => dispatch({ type: ActionTypes.SET_QUESTIONS, payload: questions }),
     setAnswers: (answers) => dispatch({ type: ActionTypes.SET_ANSWERS, payload: answers }),
     setAnnotatedFields: (fields) => dispatch({ type: ActionTypes.SET_ANNOTATED_FIELDS, payload: fields }),
