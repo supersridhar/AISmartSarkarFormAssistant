@@ -112,7 +112,7 @@ function UploadPage() {
             ) : (
               <FileUpload
                 onFileSelect={handleFileSelect}
-                accept="image/*,.pdf"
+                accept="image/*"
               />
             )}
 

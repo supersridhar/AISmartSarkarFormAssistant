@@ -2,6 +2,7 @@
 from PIL import Image
 import pytesseract
 from typing import List, Dict, Optional
+import os
 
 # Configure Tesseract path
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"

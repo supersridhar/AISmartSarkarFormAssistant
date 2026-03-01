@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Card, Loading } from '../../components/ui';
 import { useApp } from '../../context/AppContext';
-import { speakText, SPEECH_LANGUAGES } from '../../utils/voice';
+import { speakText, stopSpeaking, SPEECH_LANGUAGES } from '../../utils/voice';
 import './ExplainPage.css';
 
 const API_BASE = "http://127.0.0.1:8000";
@@ -35,22 +35,42 @@ function ExplainPage() {
       try {
         setIsExplaining(true);
         
-        // Call the explain_form endpoint
-        const response = await axios.post(`${API_BASE}/explain_form`, {
+        // Get language codes
+        const langMap = { 'English': 'en', 'Hindi': 'hi', 'Marathi': 'mr' };
+        const targetLang = langMap[state.selectedLanguage] || 'hi';
+        console.log('Calling multilingual endpoint with:', { form_id: state.formId, targetLang });
+        
+        // Call the new multilingual endpoint
+        const response = await axios.post(`${API_BASE}/explain_form_multilingual`, {
           form_id: state.formId,
-          language: state.selectedLanguage
+          source_language: 'en',  // Assume form is in English (OCR output)
+          target_language: targetLang  // Explain in user's selected language
         });
 
+        console.log('API Response:', response.data);
         const exp = response.data;
-        setExplanation(exp);
-        setFormExplanation(exp);
         
-        // Speak the explanation
-        const fullExplanation = `${exp.purpose}. ${exp.summary}`;
-        await speakText(fullExplanation, getSpeechLanguage());
+        // Transform to match expected format
+        const transformedExp = {
+          form_type: exp.form_type,
+          purpose: exp.purpose,
+          sections: exp.sections?.map(s => s.title) || [],
+          summary: exp.explanation_in_target_language,
+          form_category: exp.form_category,
+          issuing_authority: exp.issuing_authority,
+          required_documents: exp.required_documents,
+          important_notes: exp.important_notes
+        };
+        
+        console.log('Transformed explanation:', transformedExp);
+        setExplanation(transformedExp);
+        setFormExplanation(transformedExp);
+        
+        // NOTE: Removed automatic TTS - only play on button click
         
       } catch (err) {
         console.error('Error explaining form:', err);
+        console.error('Error response:', err.response?.data);
         // Fallback - continue without explanation
         setExplanation({
           form_type: 'Form',
@@ -70,6 +90,14 @@ function ExplainPage() {
 
   const handleSpeakExplanation = async () => {
     if (!explanation) return;
+    
+    // If already speaking, stop it
+    if (isSpeaking) {
+      stopSpeaking();
+      setIsSpeaking(false);
+      return;
+    }
+    
     try {
       setIsSpeaking(true);
       const fullExplanation = `${explanation.purpose}. ${explanation.summary}`;
@@ -127,12 +155,22 @@ function ExplainPage() {
                 <div className="explanation-section">
                   <h3>Form Type / फॉर्म का प्रकार</h3>
                   <p className="form-type">{explanation.form_type}</p>
+                  {explanation.form_category && (
+                    <p className="form-category">Category: {explanation.form_category}</p>
+                  )}
                 </div>
 
                 <div className="explanation-section">
                   <h3>Purpose / उद्देश्य</h3>
                   <p className="purpose">{explanation.purpose}</p>
                 </div>
+
+                {explanation.issuing_authority && (
+                  <div className="explanation-section">
+                    <h3>Issuing Authority / जारी करने वाला प्राधिकारी</h3>
+                    <p>{explanation.issuing_authority}</p>
+                  </div>
+                )}
 
                 {explanation.sections && explanation.sections.length > 0 && (
                   <div className="explanation-section">
@@ -146,9 +184,31 @@ function ExplainPage() {
                 )}
 
                 <div className="explanation-section summary-section">
-                  <h3>Summary / सारांश</h3>
+                  <h3>Explanation / सारांश</h3>
                   <p className="summary">{explanation.summary}</p>
                 </div>
+
+                {explanation.required_documents && explanation.required_documents.length > 0 && (
+                  <div className="explanation-section">
+                    <h3>Required Documents / आवश्यक दस्तावेज़</h3>
+                    <ul className="sections-list">
+                      {explanation.required_documents.map((doc, index) => (
+                        <li key={index}>{doc}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {explanation.important_notes && explanation.important_notes.length > 0 && (
+                  <div className="explanation-section notes-section">
+                    <h3>Important Notes / महत्वपूर्ण नोट्स</h3>
+                    <ul className="sections-list">
+                      {explanation.important_notes.map((note, index) => (
+                        <li key={index}>{note}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
 
@@ -156,10 +216,9 @@ function ExplainPage() {
               <button 
                 className={`voice-btn speak-btn ${isSpeaking ? 'speaking' : ''}`}
                 onClick={handleSpeakExplanation}
-                disabled={isSpeaking}
-                title="Listen to explanation"
+                title={isSpeaking ? "Stop" : "Listen to explanation"}
               >
-                {isSpeaking ? '🔊...' : '🔊 Listen'}
+                {isSpeaking ? '⏹ Stop' : '🔊 Listen'}
               </button>
             </div>
 

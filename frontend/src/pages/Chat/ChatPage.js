@@ -43,29 +43,62 @@ function ChatPage() {
     const generateQuestions = async () => {
       try {
         setIsLoadingQuestions(true);
-        const response = await axios.post(`${API_BASE}/generate_questions`, {
-          form_id: state.formId,
-          language: state.selectedLanguage,
-          fields: state.fields,
-        });
+        
+        // Get language code
+        const langMap = { 'English': 'en', 'Hindi': 'hi', 'Marathi': 'mr' };
+        const targetLang = langMap[state.selectedLanguage] || 'hi';
+        
+        // Try the new multilingual endpoint first
+        try {
+          const response = await axios.post(`${API_BASE}/generate_questions_multilingual`, {
+            form_id: state.formId,
+            target_language: targetLang
+          });
+          
+          const questions = response.data.questions;
+          setQuestions(questions);
+          
+          // Add welcome message to chat
+          const welcomeMessage = getWelcomeMessage(state.selectedLanguage);
+          setChatHistory([
+            {
+              type: 'bot',
+              message: welcomeMessage,
+              fieldName: null
+            },
+            {
+              type: 'bot',
+              message: questions[0]?.question_text || 'What is your name?',
+              fieldName: questions[0]?.field_name || 'Name'
+            }
+          ]);
+        } catch (multilingualErr) {
+          // Fall back to old endpoint
+          console.log('Multilingual questions failed, falling back:', multilingualErr);
+          const response = await axios.post(`${API_BASE}/generate_questions`, {
+            form_id: state.formId,
+            language: state.selectedLanguage,
+            fields: state.fields,
+          });
 
-        const questions = response.data.questions;
-        setQuestions(questions);
+          const questions = response.data.questions;
+          setQuestions(questions);
 
-        // Add welcome message to chat
-        const welcomeMessage = getWelcomeMessage(state.selectedLanguage);
-        setChatHistory([
-          {
-            type: 'bot',
-            message: welcomeMessage,
-            fieldName: null
-          },
-          {
-            type: 'bot',
-            message: questions[0]?.question_text || 'What is your name?',
-            fieldName: questions[0]?.field_name || 'Name'
-          }
-        ]);
+          // Add welcome message to chat
+          const welcomeMessage = getWelcomeMessage(state.selectedLanguage);
+          setChatHistory([
+            {
+              type: 'bot',
+              message: welcomeMessage,
+              fieldName: null
+            },
+            {
+              type: 'bot',
+              message: questions[0]?.question_text || 'What is your name?',
+              fieldName: questions[0]?.field_name || 'Name'
+            }
+          ]);
+        }
       } catch (err) {
         console.error('Error generating questions:', err);
         setError('Failed to generate questions. Please try again.');
