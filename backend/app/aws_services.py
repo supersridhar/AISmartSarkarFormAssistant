@@ -182,9 +182,9 @@ JSON:
         
         prompt = prompts.get(lang_code, prompts["en"])
         
-        # Using Llama 3 on Bedrock
-        # Note: You need to enable Llama 3 in Bedrock first
-        model_id = "meta.llama3-70b-instruct-v1:0"
+        # Using Claude 3 Haiku - cost-effective with excellent multilingual support
+        # Note: Make sure Claude 3 Haiku is enabled in AWS Bedrock console
+        model_id = "anthropic.claude-3-haiku-20240307-v1:0"
         
         # For vision, we'd need to use a different approach
         # For now, use text-only with OCR
@@ -236,7 +236,21 @@ JSON:
         return result
         
     except ClientError as e:
-        print(f"AWS Bedrock error: {e}")
+        error_message = str(e)
+        print(f"AWS Bedrock error: {error_message}")
+        # Provide more helpful error messages
+        if "ValidationException" in error_message and "invalid" in error_message.lower():
+            print("ERROR: The model identifier is invalid or the model is not enabled.")
+            print("Please ensure:")
+            print("1. The model is enabled in AWS Bedrock console: https://console.aws.amazon.com/bedrock/")
+            print("2. You have access to the model in your AWS account")
+            print("3. The model is available in your region (currently using: " + AWS_REGION + ")")
+        elif "INVALID_PAYMENT_INSTRUMENT" in error_message or "AccessDeniedException" in error_message:
+            print("ERROR: Payment instrument issue - AWS account needs valid payment method")
+            print("Please ensure:")
+            print("1. Your AWS account has a valid payment method")
+            print("2. You have subscribed to the model in AWS Marketplace (if required)")
+            print("3. Check AWS Bedrock > Model access to request model access")
         return {
             "form_type": "Form",
             "form_category": "Unknown",
@@ -245,7 +259,7 @@ JSON:
             "sections": [],
             "fields": [],
             "required_documents": [],
-            "summary": "Unable to analyze form"
+            "summary": "Unable to analyze form - please check AWS Bedrock configuration"
         }
     except Exception as e:
         print(f"Bedrock error: {e}")
@@ -328,6 +342,7 @@ Respond ONLY in this JSON format:
     try:
         # Using Claude 3 Haiku - great for multilingual tasks and cost-effective
         # For better reasoning, you can use: "anthropic.claude-3-sonnet-20240229-v1:0"
+        # Note: Make sure Claude 3 Haiku is enabled in AWS Bedrock console
         model_id = "anthropic.claude-3-haiku-20240307-v1:0"
         
         payload = {
@@ -351,7 +366,21 @@ Respond ONLY in this JSON format:
         return parse_claude_response(result, target)
         
     except ClientError as e:
-        print(f"AWS Bedrock error: {e}")
+        error_message = str(e)
+        print(f"AWS Bedrock error: {error_message}")
+        # Provide more helpful error messages
+        if "ValidationException" in error_message and "invalid" in error_message.lower():
+            print("ERROR: The model identifier is invalid or the model is not enabled.")
+            print("Please ensure:")
+            print("1. The model is enabled in AWS Bedrock console: https://console.aws.amazon.com/bedrock/")
+            print("2. You have access to the model in your AWS account")
+            print("3. The model is available in your region (currently using: " + AWS_REGION + ")")
+        elif "INVALID_PAYMENT_INSTRUMENT" in error_message or "AccessDeniedException" in error_message:
+            print("ERROR: Payment instrument issue - AWS account needs valid payment method")
+            print("Please ensure:")
+            print("1. Your AWS account has a valid payment method")
+            print("2. You have subscribed to the model in AWS Marketplace (if required)")
+            print("3. Check AWS Bedrock > Model access to request model access")
         return get_default_form_response(target)
     except Exception as e:
         print(f"Multilingual explanation error: {e}")
@@ -431,6 +460,8 @@ Respond as JSON array:
 ]"""
 
     try:
+        # Using Claude 3 Haiku - great for multilingual tasks and cost-effective
+        # Note: Make sure Claude 3 Haiku is enabled in AWS Bedrock console
         model_id = "anthropic.claude-3-haiku-20240307-v1:0"
         
         payload = {
@@ -512,24 +543,29 @@ JSON:"""
         
         prompt = prompts.get(lang_code, prompts["en"])
         
-        model_id = "meta.llama3-70b-instruct-v1:0"
+        # Using Claude 3 Haiku - cost-effective with excellent multilingual support
+        # Note: Make sure Claude 3 Haiku is enabled in AWS Bedrock console
+        model_id = "anthropic.claude-3-haiku-20240307-v1:0"
         
         payload = {
-            "prompt": f"<s>[INST] {prompt} [/INST]",
-            "max_gen_len": 2048,
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": 2048,
             "temperature": 0.5,
-            "top_p": 0.9
+            "messages": [{
+                "role": "user",
+                "content": prompt
+            }]
         }
         
         response = client.invoke_model(
             modelId=model_id,
-            body=json.dumps(payload),
-            accept="application/json",
-            contentType="application/json"
+            contentType='application/json',
+            accept='application/json',
+            body=json.dumps(payload)
         )
         
-        response_body = json.loads(response['body'].read())
-        text = response_body.get('generation', '')
+        response_body = json.loads(response['body'].read().decode('utf-8'))
+        text = response_body.get('content', [{}])[0].get('text', '')
         
         # Extract JSON
         try:
